@@ -1,0 +1,16 @@
+[package]
+name = "rustracer"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+eframe = { version = "0.20.1", features = ["__screenshot"] }
+egui = "0.20.1"
+quaternion = "1.0.0"
+serde = "1.0.152"
+serde_json = "1.0.91"
+tracing = "0.1.37"
+tracing-subscriber = "0.3.16"
+vector3d = "0.2.1"
