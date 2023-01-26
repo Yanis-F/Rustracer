@@ -5,7 +5,7 @@ use rand::Rng;
 
 #[derive(Default)]
 pub struct Renderer {
-    size: [usize; 2],
+    pub size: [usize; 2],
     scene: Scene,
 
     data: Vec<Color32>,
