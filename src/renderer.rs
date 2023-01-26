@@ -52,7 +52,7 @@ impl Renderer {
             ];
             let ending_coordinate_exclusive = [
                 ending_pixel_exclusive % size[0],
-                ending_pixel_exclusive / size[0],
+                ending_pixel_exclusive / size[0] + 1,
             ];
 
             renderer.thread_handles.push(thread::spawn(move || {
