@@ -39,6 +39,7 @@ impl eframe::App for Rustracer {
 
         if self.renderer_dirty {
             *self.renderer = Renderer::new(self.render_size_dragger_value, self.scene.clone());
+            self.renderer_dirty = false;
         }
     }
 }
@@ -97,7 +98,10 @@ impl Rustracer {
         });
 
         let texture_id = self.visualizer_texture_id.get_or_insert_with(|| {
-            let image_data = ImageData::Color(ColorImage::new(self.renderer.size, Color32::GRAY));
+            let image_data = ImageData::Color(ColorImage::new(
+                self.renderer.get_image_size(),
+                Color32::GRAY,
+            ));
             ctx.tex_manager().write().alloc(
                 "visualizer".to_owned(),
                 image_data,
@@ -109,7 +113,7 @@ impl Rustracer {
 
         let image = (*self.renderer).get_image();
         let image_data = ImageData::Color(ColorImage {
-            size: self.renderer.size,
+            size: self.renderer.get_image_size(),
             pixels: image,
         });
 
@@ -119,7 +123,10 @@ impl Rustracer {
         );
         ui.image(
             *texture_id,
-            Vec2::new(self.renderer.size[0] as f32, self.renderer.size[1] as f32),
+            Vec2::new(
+                self.renderer.get_image_size()[0] as f32,
+                self.renderer.get_image_size()[1] as f32,
+            ),
         );
         ctx.request_repaint();
     }

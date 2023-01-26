@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 eframe = { version = "0.20.1", features = ["__screenshot"] }
 egui = "0.20.1"
+num_cpus = "1.15.0"
 quaternion = "1.0.0"
 rand = "0.8.5"
 serde = "1.0.152"
