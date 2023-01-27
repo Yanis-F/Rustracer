@@ -54,15 +54,15 @@ impl Rustracer {
             ui.label("Position:");
             ui.label("x:");
             self.renderer_dirty |= ui
-                .add(egui::DragValue::new(&mut self.scene.camera.position.x).speed(0.1))
+                .add(egui::DragValue::new(&mut self.scene.camera.position[0]).speed(0.1))
                 .changed();
             ui.label("y:");
             self.renderer_dirty |= ui
-                .add(egui::DragValue::new(&mut self.scene.camera.position.y).speed(0.1))
+                .add(egui::DragValue::new(&mut self.scene.camera.position[1]).speed(0.1))
                 .changed();
             ui.label("z:");
             self.renderer_dirty |= ui
-                .add(egui::DragValue::new(&mut self.scene.camera.position.z).speed(0.1))
+                .add(egui::DragValue::new(&mut self.scene.camera.position[2]).speed(0.1))
                 .changed();
         });
         ui.horizontal(|ui| {
@@ -131,3 +131,4 @@ impl Rustracer {
         ctx.request_repaint();
     }
 }
+

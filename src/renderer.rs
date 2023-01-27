@@ -1,15 +1,15 @@
 use std::{
+    cell::RefCell,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc, Mutex,
     },
-    thread::{self, JoinHandle}, cell::RefCell, borrow::Borrow, ops::Deref,
+    thread::{self, JoinHandle},
 };
 
 use egui::Color32;
 
-use crate::scene::Scene;
-use rand::Rng;
+use crate::{scene::Scene, math::*, raytracer};
 
 pub struct Renderer {
     thread_handles: Vec<JoinHandle<()>>,
@@ -22,18 +22,21 @@ struct RendererData {
     data: Mutex<RefCell<Vec<Color32>>>,
 
     bail_threads: AtomicBool,
+
+	virtual_screen_pixel_size: Vector3,
+	virtual_screen_bottomleft_pixel_center: Vector3,
 }
 
 impl Renderer {
     pub fn new(size: [usize; 2], scene: Scene) -> Renderer {
         let mut renderer = Renderer {
             thread_handles: vec![],
-            renderer_data: Arc::new(RendererData {
+            renderer_data: Arc::new(RendererData::new(
                 size,
                 scene,
-                data: Mutex::new(RefCell::new(vec![Color32::GRAY; size[0] * size[1]])),
-                bail_threads: AtomicBool::new(false),
-            }),
+                Mutex::new(RefCell::new(vec![Color32::GRAY; size[0] * size[1]])),
+                AtomicBool::new(false),
+            )),
         };
 
         let num_cpus = num_cpus::get();
@@ -67,8 +70,8 @@ impl Renderer {
     /// Returns an image of `self.get_image_size()` size
     pub fn get_image(&self) -> Vec<Color32> {
         let refcell_mutexguard = self.renderer_data.data.lock().unwrap();
-    	let refcell_ref = (*refcell_mutexguard).clone(); // clones entire image :(
-    	refcell_ref.take()
+        let refcell_ref = (*refcell_mutexguard).clone(); // clones entire image :(
+        refcell_ref.take()
     }
 
     /// Returns f32 between `0` (not started) and `1` (finished)
@@ -87,7 +90,7 @@ impl Drop for Renderer {
             .bail_threads
             .store(true, Ordering::Relaxed);
 
-		let handles = std::mem::take(&mut self.thread_handles);
+        let handles = std::mem::take(&mut self.thread_handles);
         handles.into_iter().for_each(|thread| {
             thread.join().unwrap();
         });
@@ -95,14 +98,49 @@ impl Drop for Renderer {
 }
 
 impl RendererData {
+	pub fn new(size: [usize; 2], scene: Scene, data: Mutex<RefCell<Vec<Color32>>>, bail_threads: AtomicBool) -> Self {
+        let axis_up      = rotate_vector(scene.camera.orientation, VECTOR3_UP);
+        let axis_forward = rotate_vector(scene.camera.orientation, VECTOR3_FORWARD);
+        let axis_right   = rotate_vector(scene.camera.orientation, VECTOR3_RIGHT);
+
+        let virtual_screen_center = axis_forward;
+
+		// bottomleft corner of bottomleft-most pixel of the virtual screen
+		let virtual_screen_bottomleft = {
+			let relative_down = vec3_scale(vec3_neg(axis_up), 0.5);
+			let relative_left = vec3_scale(vec3_neg(axis_right), 0.5);
+
+			let result = virtual_screen_center;
+			let result = vec3_add(result, relative_down);
+			let result = vec3_add(result, relative_left);
+
+			result
+		};
+
+        let virtual_screen_pixel_size = {
+			let size_up = vec3_scale(axis_up, 1.0 / size[1] as f64);
+			let size_right = vec3_scale(axis_right, 1.0 / size[0] as f64);
+
+			vec3_add(size_up, size_right)
+		};
+
+		let virtual_screen_bottomleft_pixel_center = vec3_add(virtual_screen_bottomleft, vec3_scale(virtual_screen_pixel_size, 0.5));
+
+		Self {
+			size,
+			scene,
+			data,
+			bail_threads,
+			virtual_screen_pixel_size,
+			virtual_screen_bottomleft_pixel_center,
+		}
+	}
+
     pub fn render_thread_run(
         &self,
         starting_coordinate_inclusive: [usize; 2],
         ending_coordinate_exclusive: [usize; 2],
     ) {
-        let mut rng = rand::thread_rng();
-        let color = Color32::from_rgb(rng.gen(), rng.gen(), rng.gen());
-
         for y in starting_coordinate_inclusive[1]..ending_coordinate_exclusive[1] {
             let start_x = if y == starting_coordinate_inclusive[1] {
                 starting_coordinate_inclusive[0]
@@ -116,6 +154,8 @@ impl RendererData {
             };
 
             for x in start_x..end_x {
+                let color = self.get_pixel_color(x, y);
+
                 self.data.lock().unwrap().get_mut()[x + y * self.size[0]] = color;
 
                 if self.bail_threads.load(Ordering::Relaxed) {
@@ -123,5 +163,22 @@ impl RendererData {
                 }
             }
         }
+    }
+
+	/// x is rightwards
+	/// y is upwards
+    fn get_pixel_color(&self, x: usize, y: usize) -> Color32 {
+		let target_pixel_coordinate = vec3_add(vec3_scale(VECTOR3_RIGHT, x as f64), vec3_scale(VECTOR3_UP, y as f64));
+		let target_pixel_center_position = {
+			let relative_pos = vec3_mul(target_pixel_coordinate, self.virtual_screen_pixel_size);
+			vec3_add(self.virtual_screen_bottomleft_pixel_center, relative_pos)
+		};
+
+		let ray = Ray {
+			origin: self.scene.camera.position,
+			direction: target_pixel_center_position,
+		};
+
+		raytracer::raytracer(&self.scene, &ray)
     }
 }

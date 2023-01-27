@@ -1,4 +1,4 @@
-use crate::types::*;
+use crate::math::*;
 
 #[derive(Default, Clone)]
 pub struct Scene {
@@ -7,6 +7,6 @@ pub struct Scene {
 
 #[derive(Default, Clone)]
 pub struct Camera {
-    pub position: Vec3,
+    pub position: Vector3,
     pub orientation: Quaternion,
 }

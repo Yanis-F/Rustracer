@@ -3,7 +3,8 @@ use eframe::egui;
 mod renderer;
 mod rustracer;
 mod scene;
-mod types;
+mod math;
+mod raytracer;
 
 fn main() {
     // Log to stdout (if you run with `RUST_LOG=debug`).

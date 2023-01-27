@@ -1530,6 +1530,7 @@ dependencies = [
  "serde_json",
  "tracing",
  "tracing-subscriber",
+ "vecmath",
  "vector3d",
 ]
 
