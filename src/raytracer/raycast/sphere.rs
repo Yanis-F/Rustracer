@@ -2,7 +2,7 @@ use crate::{math::*, scene::object::Sphere};
 
 use super::RaycastHit;
 
-pub fn raycast_sphere(sphere: &Sphere, ray: &Ray) -> Option<RaycastHit> {
+pub fn raycast_sphere<'sphere>(sphere: &'sphere Sphere, ray: &Ray) -> Option<RaycastHit<'sphere>> {
     // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection.html
 
     let sphere_position_relative = vec3_sub(sphere.center, ray.origin);
@@ -26,5 +26,6 @@ pub fn raycast_sphere(sphere: &Sphere, ray: &Ray) -> Option<RaycastHit> {
 
     Some(RaycastHit {
         distance: distance as f32,
+        surface: &sphere.surface
     })
 }

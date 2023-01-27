@@ -1,14 +1,15 @@
 mod sphere;
 pub use sphere::raycast_sphere;
 
-use crate::{math::Ray, scene::object::SceneObject};
+use crate::{math::Ray, scene::{object::SceneObject, surface::Surface}};
 
-pub struct RaycastHit {
+pub struct RaycastHit<'scene> {
     pub distance: f32,
+    pub surface: &'scene Surface,
     // position, normal, distance, surface
 }
 
-pub fn raycast_object_slice(object_slice: &[SceneObject], ray: &Ray) -> Option<RaycastHit> {
+pub fn raycast_object_slice<'scene>(object_slice: &'scene [SceneObject], ray: &Ray) -> Option<RaycastHit<'scene>> {
     let mut result = None as Option<RaycastHit>;
 
     for object in object_slice {
@@ -28,7 +29,7 @@ pub fn raycast_object_slice(object_slice: &[SceneObject], ray: &Ray) -> Option<R
     result
 }
 
-pub fn raycast_object(object: &SceneObject, ray: &Ray) -> Option<RaycastHit> {
+pub fn raycast_object<'scene>(object: &'scene SceneObject, ray: &Ray) -> Option<RaycastHit<'scene>> {
     match object {
         SceneObject::Sphere(sphere) => raycast_sphere(sphere, ray),
     }

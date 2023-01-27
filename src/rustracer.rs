@@ -4,6 +4,7 @@ use crate::math::vec3;
 use crate::renderer::Renderer;
 use crate::scene::object::Sphere;
 use crate::scene::Scene;
+use crate::scene::surface::Surface;
 
 pub struct Rustracer {
     scene: Scene,
@@ -25,6 +26,7 @@ impl Rustracer {
             .push(crate::scene::object::SceneObject::Sphere(Sphere {
                 center: vec3(0.0, 0.0, 2.0),
                 radius: 0.5,
+                surface: Surface::RUBY
             }));
 
         Self {

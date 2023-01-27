@@ -9,7 +9,7 @@ use std::{
 
 use egui::Color32;
 
-use crate::{math::*, raytracer, scene::Scene};
+use crate::{math::*, raytracer, scene::Scene, color::RGB};
 
 pub struct Renderer {
     thread_handles: Vec<JoinHandle<()>>,
@@ -165,7 +165,7 @@ impl RendererData {
             for x in start_x..end_x {
                 let color = self.get_pixel_color(x, y);
 
-                self.data.lock().unwrap().get_mut()[x + y * self.size[0]] = color;
+                self.data.lock().unwrap().get_mut()[x + y * self.size[0]] = color.into();
 
                 if self.bail_threads.load(Ordering::Relaxed) {
                     return;
@@ -176,7 +176,7 @@ impl RendererData {
 
     /// x is rightwards
     /// y is upwards
-    fn get_pixel_color(&self, x: usize, y: usize) -> Color32 {
+    fn get_pixel_color(&self, x: usize, y: usize) -> RGB {
         let target_pixel_coordinate = vec3_add(
             vec3_scale(VECTOR3_RIGHT, x as f64),
             vec3_scale(VECTOR3_UP, y as f64),

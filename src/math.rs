@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 pub use quaternion::*;
 pub use vecmath::*;
 
@@ -6,6 +8,8 @@ pub fn vec2(x: f64, y: f64) -> Vector2 {
     [x, y]
 }
 
+// TODO: check if I can't do that as Vector2::UP by using an extension trait to provide a custom
+// `impl` block
 pub const VECTOR2_UP: Vector2 = [0.0, -1.0];
 pub const VECTOR2_RIGHT: Vector2 = [1.0, 0.0];
 pub const VECTOR2_ZERO: Vector2 = [0.0, 0.0];

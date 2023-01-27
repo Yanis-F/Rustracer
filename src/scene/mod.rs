@@ -1,4 +1,4 @@
-use crate::{color::*, math::*};
+use crate::{math::*};
 
 pub mod object;
 use object::*;

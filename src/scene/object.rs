@@ -1,5 +1,7 @@
 use crate::math::*;
-use crate::raytracer::raycast::RaycastHit;
+
+
+use super::surface::Surface;
 
 #[derive(Clone)]
 pub enum SceneObject {
@@ -12,4 +14,5 @@ pub enum SceneObject {
 pub struct Sphere {
     pub center: Vector3,
     pub radius: f64,
+    pub surface: Surface
 }
