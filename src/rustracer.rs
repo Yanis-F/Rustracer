@@ -1,6 +1,8 @@
 use egui::{Color32, ColorImage, ImageData, TextureId, Ui, Vec2};
 
+use crate::math::vec3;
 use crate::renderer::Renderer;
+use crate::scene::object::Sphere;
 use crate::scene::Scene;
 
 pub struct Rustracer {
@@ -17,9 +19,17 @@ impl Rustracer {
     pub fn new() -> Self {
         let render_size = [1280, 720];
 
+        let mut default_scene = Scene::default();
+        default_scene
+            .objects
+            .push(crate::scene::object::SceneObject::Sphere(Sphere {
+                center: vec3(0.0, 0.0, 2.0),
+                radius: 0.5,
+            }));
+
         Self {
-            scene: Scene::default(),
-            renderer: Box::new(Renderer::new(render_size, Scene::default())),
+            scene: default_scene.clone(),
+            renderer: Box::new(Renderer::new(render_size, default_scene)),
             render_size_dragger_value: render_size,
             visualizer_texture_id: None,
             renderer_dirty: false,
@@ -131,4 +141,3 @@ impl Rustracer {
         ctx.request_repaint();
     }
 }
-

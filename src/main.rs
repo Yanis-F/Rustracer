@@ -1,10 +1,11 @@
 use eframe::egui;
 
+mod color;
+mod math;
+mod raytracer;
 mod renderer;
 mod rustracer;
 mod scene;
-mod math;
-mod raytracer;
 
 fn main() {
     // Log to stdout (if you run with `RUST_LOG=debug`).
