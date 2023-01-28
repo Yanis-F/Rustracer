@@ -40,11 +40,12 @@ impl Ray {
     }
 }
 
-pub trait UiVectorpickerExt {
+pub trait UiMathpickerExt {
     fn rustracer_vector3_edit(&mut self, vector: &mut Vector3, speed: f64) -> egui::Response;
+    fn rustracer_quaternion_edit(&mut self, quaternion: &mut Quaternion, speed: f64) -> egui::Response;
 }
 
-impl UiVectorpickerExt for egui::Ui {
+impl UiMathpickerExt for egui::Ui {
     fn rustracer_vector3_edit(&mut self, vector: &mut Vector3, speed: f64) -> egui::Response {
         let inner_response = self.horizontal(|ui| {
             let first_response = ui.label("x:");
@@ -61,7 +62,17 @@ impl UiVectorpickerExt for egui::Ui {
 
         inner_response.inner.union(inner_response.response)
     }
+
+
+	fn rustracer_quaternion_edit(&mut self, quaternion: &mut Quaternion, speed: f64) -> egui::Response {
+		let mut facing_direction = rotate_vector(*quaternion, VECTOR3_FORWARD);
+
+		let response = self.rustracer_vector3_edit(&mut facing_direction, speed);
+
+		*quaternion = rotation_from_to(VECTOR3_FORWARD, facing_direction);
+
+		response
+	}
 }
 
 // For the orientation picker:
-// ui.drag_angle(radians)

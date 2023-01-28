@@ -1,7 +1,7 @@
 use egui::{Color32, ColorImage, ImageData, TextureId, Ui, Vec2};
 
 use crate::color::UiColorpickerExt;
-use crate::math::{vec3, UiVectorpickerExt};
+use crate::math::{vec3, UiMathpickerExt};
 use crate::renderer::Renderer;
 use crate::scene::light::{
     light_type::{self, *},
@@ -84,7 +84,9 @@ impl Rustracer {
         });
         ui.horizontal(|ui| {
             ui.label("Facing direction:");
-            ui.label(" for now it's locked at {tbd}");
+            self.renderer_dirty |= ui
+                .rustracer_quaternion_edit(&mut self.scene.camera.orientation, 0.1)
+                .changed();
         });
 
         ui.add(egui::Separator::default().horizontal().spacing(50.0));
