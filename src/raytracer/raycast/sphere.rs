@@ -23,9 +23,13 @@ pub fn raycast_sphere<'sphere>(sphere: &'sphere Sphere, ray: &Ray) -> Option<Ray
     let thc = (sphere.radius * sphere.radius - d * d).sqrt();
 
     let distance = tca - thc;
+    let position = ray.get_position_at_distance(distance);
+    let normal = vec3_normalized_sub(position, sphere.center);
 
     Some(RaycastHit {
-        distance: distance as f32,
-        surface: &sphere.surface
+        distance,
+        surface: &sphere.surface,
+        position,
+        normal,
     })
 }

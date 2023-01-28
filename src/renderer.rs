@@ -9,7 +9,7 @@ use std::{
 
 use egui::Color32;
 
-use crate::{math::*, raytracer, scene::Scene, color::RGB};
+use crate::{color::RGB, math::*, raytracer, scene::Scene};
 
 pub struct Renderer {
     thread_handles: Vec<JoinHandle<()>>,

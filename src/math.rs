@@ -34,28 +34,33 @@ pub struct Ray {
     pub direction: Vector3,
 }
 
+impl Ray {
+    pub fn get_position_at_distance(&self, distance: f64) -> Vector3 {
+        vec3_add(self.origin, vec3_scale(self.direction, distance))
+    }
+}
 
 pub trait UiVectorpickerExt {
     fn rustracer_vector3_edit(&mut self, vector: &mut Vector3, speed: f64) -> egui::Response;
 }
 
 impl UiVectorpickerExt for egui::Ui {
-	fn rustracer_vector3_edit(&mut self, vector: &mut Vector3, speed: f64) -> egui::Response {
-		let inner_response = self.horizontal(|ui| {
-			let first_response = ui.label("x:");
-			vec![
-				ui.add(egui::DragValue::new(&mut vector[0]).speed(speed)),
-				ui.label("y:"),
-				ui.add(egui::DragValue::new(&mut vector[1]).speed(speed)),
-				ui.label("z:"),
-				ui.add(egui::DragValue::new(&mut vector[2]).speed(speed)),
-			]
-				.iter()
-				.fold(first_response, |a, b| b.union(a))
-		});
+    fn rustracer_vector3_edit(&mut self, vector: &mut Vector3, speed: f64) -> egui::Response {
+        let inner_response = self.horizontal(|ui| {
+            let first_response = ui.label("x:");
+            vec![
+                ui.add(egui::DragValue::new(&mut vector[0]).speed(speed)),
+                ui.label("y:"),
+                ui.add(egui::DragValue::new(&mut vector[1]).speed(speed)),
+                ui.label("z:"),
+                ui.add(egui::DragValue::new(&mut vector[2]).speed(speed)),
+            ]
+            .iter()
+            .fold(first_response, |a, b| b.union(a))
+        });
 
-		inner_response.inner.union(inner_response.response)
-	}
+        inner_response.inner.union(inner_response.response)
+    }
 }
 
 // For the orientation picker:

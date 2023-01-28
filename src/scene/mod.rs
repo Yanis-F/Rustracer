@@ -1,4 +1,4 @@
-use crate::{math::*, color::RGBA};
+use crate::{color::RGB, math::*};
 
 pub mod object;
 use object::*;
@@ -15,7 +15,7 @@ pub mod surface;
 #[derive(Default, Clone)]
 pub struct Scene {
     pub camera: Camera,
-    pub ambiant: RGBA,
+    pub ambiant: RGB,
 
     pub objects: Vec<SceneObject>,
     pub lights: Vec<SceneLight>,
