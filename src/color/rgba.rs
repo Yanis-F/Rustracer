@@ -77,3 +77,25 @@ impl From<[f32; 4]> for RGBA {
 }
 
 
+#[allow(dead_code)]
+impl RGBA {
+    pub const BLACK: RGBA        = RGBA { r: 0.0      , g: 0.0      , b: 0.0     , a: 1.0 } ;
+    pub const DARK_GRAY: RGBA    = RGBA { r: 0.376471 , g: 0.376471 , b: 0.376471, a: 1.0 } ;
+    pub const GRAY: RGBA         = RGBA { r: 0.627451 , g: 0.627451 , b: 0.627451, a: 1.0 } ;
+    pub const LIGHT_GRAY: RGBA   = RGBA { r: 0.862745 , g: 0.862745 , b: 0.862745, a: 1.0 } ;
+    pub const WHITE: RGBA        = RGBA { r: 1.0      , g: 1.0      , b: 1.0     , a: 1.0 } ;
+    pub const BROWN: RGBA        = RGBA { r: 0.647059 , g: 0.164706 , b: 0.164706, a: 1.0 } ;
+    pub const DARK_RED: RGBA     = RGBA { r: 0.545098 , g: 0.0      , b: 0.0     , a: 1.0 } ;
+    pub const RED: RGBA          = RGBA { r: 1.0      , g: 0.0      , b: 0.0     , a: 1.0 } ;
+    pub const LIGHT_RED: RGBA    = RGBA { r: 1.0      , g: 0.501961 , b: 0.501961, a: 1.0 } ;
+    pub const YELLOW: RGBA       = RGBA { r: 1.0      , g: 1.0      , b: 0.0     , a: 1.0 } ;
+    pub const LIGHT_YELLOW: RGBA = RGBA { r: 1.0      , g: 1.0      , b: 0.878431, a: 1.0 } ;
+    pub const KHAKI: RGBA        = RGBA { r: 0.941176 , g: 0.901961 , b: 0.54902 , a: 1.0 } ;
+    pub const DARK_GREEN: RGBA   = RGBA { r: 0.0      , g: 0.392157 , b: 0.0     , a: 1.0 } ;
+    pub const GREEN: RGBA        = RGBA { r: 0.0      , g: 1.0      , b: 0.0     , a: 1.0 } ;
+    pub const LIGHT_GREEN: RGBA  = RGBA { r: 0.564706 , g: 0.933333 , b: 0.564706, a: 1.0 } ;
+    pub const DARK_BLUE: RGBA    = RGBA { r: 0.0      , g: 0.0      , b: 0.545098, a: 1.0 } ;
+    pub const BLUE: RGBA         = RGBA { r: 0.0      , g: 0.0      , b: 1.0     , a: 1.0 } ;
+    pub const LIGHT_BLUE: RGBA   = RGBA { r: 0.678431 , g: 0.847059 , b: 0.901961, a: 1.0 } ;
+    pub const GOLD: RGBA         = RGBA { r: 1.0      , g: 0.843137 , b: 0.0     , a: 1.0 } ;
+}

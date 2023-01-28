@@ -1,4 +1,4 @@
-use crate::{math::*, scene::object::Sphere};
+use crate::{math::*, scene::object::object_type::Sphere};
 
 use super::RaycastHit;
 
