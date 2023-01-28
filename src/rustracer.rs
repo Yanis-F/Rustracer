@@ -38,7 +38,7 @@ impl Rustracer {
             .lights
             .push(crate::scene::light::SceneLight::Directional(
                 light_type::Directional {
-                    color: crate::color::RGB::BLUE,
+                    color: crate::color::Rgb::BLUE,
                     direction: vec3(1.0, -1.0, 1.0),
                 },
             ));

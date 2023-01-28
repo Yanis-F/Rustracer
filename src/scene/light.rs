@@ -10,14 +10,14 @@ pub mod light_type {
 
     #[derive(Clone)]
     pub struct Directional {
-        pub color: RGB,
+        pub color: Rgb,
         /// /!\ not normalized
         pub direction: Vector3,
     }
     impl Default for Directional {
         fn default() -> Self {
             Self {
-                color: RGB::default(),
+                color: Rgb::default(),
                 direction: vec3_neg(VECTOR3_UP),
             }
         }

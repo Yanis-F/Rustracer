@@ -1,5 +1,5 @@
 use crate::{
-    color::RGB,
+    color::Rgb,
     math::*,
     scene::{
         light::{light_type, SceneLight},
@@ -11,7 +11,7 @@ use super::raycast::{self, RaycastHit};
 
 pub struct LightRay {
     pub direction: Vector3,
-    pub color: RGB,
+    pub color: Rgb,
 }
 
 pub fn get_all_light_rays_hitting_surface(scene: &Scene, hit: &RaycastHit) -> Vec<LightRay> {

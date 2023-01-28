@@ -9,7 +9,7 @@ use std::{
 
 use egui::Color32;
 
-use crate::{color::RGB, math::*, raytracer, scene::Scene};
+use crate::{color::Rgb, math::*, raytracer, scene::Scene};
 
 pub struct Renderer {
     thread_handles: Vec<JoinHandle<()>>,
@@ -120,6 +120,7 @@ impl RendererData {
             let result = vec3_add(result, relative_down);
             let result = vec3_add(result, relative_left);
 
+            #[allow(clippy::let_and_return)]
             result
         };
 
@@ -176,7 +177,7 @@ impl RendererData {
 
     /// x is rightwards
     /// y is upwards
-    fn get_pixel_color(&self, x: usize, y: usize) -> RGB {
+    fn get_pixel_color(&self, x: usize, y: usize) -> Rgb {
         let target_pixel_coordinate = vec3_add(
             vec3_scale(VECTOR3_RIGHT, x as f64),
             vec3_scale(VECTOR3_UP, y as f64),
