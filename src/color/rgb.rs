@@ -37,15 +37,19 @@ impl RGB {
         }
     }
 
-	/// factor must be in range [0; 1]
+    /// factor must be in range [0; 1]
     pub fn scale(&self, factor: f32) -> RGB {
-		assert!((0.0..=1.0).contains(&factor), "scaling RGB color by {}. It should be in the range [0; 1]", factor);
-		Self {
-			r: self.r * factor,
-			g: self.g * factor,
-			b: self.b * factor,
-		}
-	}
+        assert!(
+            (0.0..=1.0).contains(&factor),
+            "scaling RGB color by {}. It should be in the range [0; 1]",
+            factor
+        );
+        Self {
+            r: self.r * factor,
+            g: self.g * factor,
+            b: self.b * factor,
+        }
+    }
 }
 
 impl Default for RGB {

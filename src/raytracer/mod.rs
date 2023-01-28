@@ -4,7 +4,10 @@ use crate::{
     scene::{surface::Surface, Scene},
 };
 
-use self::{lightray::{get_all_light_rays_hitting_surface, LightRay}, raycast::*};
+use self::{
+    lightray::{get_all_light_rays_hitting_surface, LightRay},
+    raycast::*,
+};
 
 pub mod lightray;
 pub mod raycast;
@@ -44,24 +47,20 @@ pub fn raytracer(scene: &Scene, ray: &Ray) -> RGB {
     let perceived_ambiant_color = get_perceived_ambiant_color(&scene.ambiant, raycast_hit.surface);
     let perceived_diffuse_color = get_perceived_diffuse_color(&lightrays, &raycast_hit);
 
-
-	RGB::additive_synthesis(&perceived_ambiant_color, &perceived_diffuse_color)
+    RGB::additive_synthesis(&perceived_ambiant_color, &perceived_diffuse_color)
 }
-
-
 
 fn get_perceived_ambiant_color(ambiant: &RGB, surface: &Surface) -> RGB {
     RGB::subtractive_synthesis(&surface.ambiant, ambiant)
 }
 
 fn get_perceived_diffuse_color(lightrays: &[LightRay], hit: &RaycastHit) -> RGB {
-	lightrays
-		.iter()
-		.fold(RGB::BLACK, |accumulator, lightray| {
-			let effectiveness = -vec3_dot(lightray.direction, hit.normal);
-			let effective_light_color = lightray.color.scale(effectiveness as f32);
-			let ray_diffuse_color = RGB::subtractive_synthesis(&effective_light_color, &hit.surface.diffuse);
+    lightrays.iter().fold(RGB::BLACK, |accumulator, lightray| {
+        let effectiveness = -vec3_dot(lightray.direction, hit.normal);
+        let effective_light_color = lightray.color.scale(effectiveness as f32);
+        let ray_diffuse_color =
+            RGB::subtractive_synthesis(&effective_light_color, &hit.surface.diffuse);
 
-			RGB::additive_synthesis(&accumulator, &ray_diffuse_color)
-		})
+        RGB::additive_synthesis(&accumulator, &ray_diffuse_color)
+    })
 }

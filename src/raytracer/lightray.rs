@@ -3,7 +3,6 @@ use crate::{
     math::*,
     scene::{
         light::{light_type, SceneLight},
-        surface::Surface,
         Scene,
     },
 };
@@ -29,9 +28,7 @@ fn get_light_ray_to_surface(
     hit: &RaycastHit,
 ) -> Option<LightRay> {
     match light {
-        SceneLight::Directional(light) => {
-            get_directional_light_ray_to_surface(scene, light, hit)
-        }
+        SceneLight::Directional(light) => get_directional_light_ray_to_surface(scene, light, hit),
     }
 }
 
@@ -40,7 +37,7 @@ fn get_directional_light_ray_to_surface(
     light: &light_type::Directional,
     hit: &RaycastHit,
 ) -> Option<LightRay> {
-	let light_direction_normalized = vec3_normalized(light.direction);
+    let light_direction_normalized = vec3_normalized(light.direction);
 
     if vec3_dot(light_direction_normalized, hit.normal) > 0.0 {
         return None;
@@ -57,5 +54,8 @@ fn get_directional_light_ray_to_surface(
         return None; // no transparent object yet
     }
 
-    Some(LightRay { direction: light_direction_normalized, color: light.color.clone() })
+    Some(LightRay {
+        direction: light_direction_normalized,
+        color: light.color.clone(),
+    })
 }

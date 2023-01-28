@@ -42,7 +42,11 @@ impl Ray {
 
 pub trait UiMathpickerExt {
     fn rustracer_vector3_edit(&mut self, vector: &mut Vector3, speed: f64) -> egui::Response;
-    fn rustracer_quaternion_edit(&mut self, quaternion: &mut Quaternion, speed: f64) -> egui::Response;
+    fn rustracer_quaternion_edit(
+        &mut self,
+        quaternion: &mut Quaternion,
+        speed: f64,
+    ) -> egui::Response;
 }
 
 impl UiMathpickerExt for egui::Ui {
@@ -63,16 +67,19 @@ impl UiMathpickerExt for egui::Ui {
         inner_response.inner.union(inner_response.response)
     }
 
+    fn rustracer_quaternion_edit(
+        &mut self,
+        quaternion: &mut Quaternion,
+        speed: f64,
+    ) -> egui::Response {
+        let mut facing_direction = rotate_vector(*quaternion, VECTOR3_FORWARD);
 
-	fn rustracer_quaternion_edit(&mut self, quaternion: &mut Quaternion, speed: f64) -> egui::Response {
-		let mut facing_direction = rotate_vector(*quaternion, VECTOR3_FORWARD);
+        let response = self.rustracer_vector3_edit(&mut facing_direction, speed);
 
-		let response = self.rustracer_vector3_edit(&mut facing_direction, speed);
+        *quaternion = rotation_from_to(VECTOR3_FORWARD, facing_direction);
 
-		*quaternion = rotation_from_to(VECTOR3_FORWARD, facing_direction);
-
-		response
-	}
+        response
+    }
 }
 
 // For the orientation picker:
