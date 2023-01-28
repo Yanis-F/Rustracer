@@ -1,5 +1,6 @@
 use egui::{Color32, ColorImage, ImageData, TextureId, Ui, Vec2};
 
+use crate::color::UiColorpickerExt;
 use crate::math::vec3;
 use crate::renderer::Renderer;
 use crate::scene::object::Sphere;
@@ -81,6 +82,15 @@ impl Rustracer {
             ui.label("Facing direction:");
             ui.label(" for now it's locked at {tbd}");
         });
+
+        ui.heading("Lights");
+        ui.horizontal(|ui| {
+            ui.label("Ambiant:");
+            self.renderer_dirty |= ui
+            	.color_edit_button_rustracer_rgba(&mut self.scene.ambiant)
+            	.changed();
+        });
+        
 
         // SCENE OBJECTS
         // todo

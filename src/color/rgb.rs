@@ -8,12 +8,54 @@ pub struct RGB {
     pub b: f32,
 }
 
+impl RGB {
+	pub fn to_array(&self) -> [f32; 3] {
+		[self.r, self.g, self.b]
+	}
+
+	pub fn subtractive_synthesis(a: &RGB, b: &RGB) -> RGB {
+		Self { 
+			r: a.r * b.r,
+			g: a.g * b.g,
+			b: a.b * b.b,
+		}
+	}
+
+	pub fn additive_synthesis(a: &RGB, b: &RGB) -> RGB {
+		let inv_a = a.inverse();
+		let inv_b = b.inverse();
+
+		let inv_result = Self::subtractive_synthesis(&inv_a, &inv_b);
+		inv_result.inverse()
+	}
+
+	pub fn inverse(&self) -> RGB {
+		Self { 
+			r: 1.0 - self.r,
+			g: 1.0 - self.g,
+			b: 1.0 - self.b,
+		}
+	}
+}
+
 impl Into<Color32> for RGB {
     fn into(self) -> Color32 {
 		Color32::from_rgb((self.r * 255.0) as u8, (self.g * 255.0) as u8, (self.b * 255.0) as u8)
     }
 }
 
+impl Into<[f32; 3]> for RGB {
+	fn into(self) -> [f32; 3] {
+		self.to_array()
+	}
+}
+impl From<[f32; 3]> for RGB {
+	fn from(arr: [f32; 3]) -> Self {
+		RGB { r: arr[0], g: arr[1], b: arr[2] }
+	}
+}
+
+#[allow(dead_code)]
 impl RGB {
     pub const BLACK: RGB        = RGB { r: 0.0      , g: 0.0      , b: 0.0      } ;
     pub const DARK_GRAY: RGB    = RGB { r: 0.376471 , g: 0.376471 , b: 0.376471 } ;
@@ -34,21 +76,4 @@ impl RGB {
     pub const BLUE: RGB         = RGB { r: 0.0      , g: 0.0      , b: 1.0      } ;
     pub const LIGHT_BLUE: RGB   = RGB { r: 0.678431 , g: 0.847059 , b: 0.901961 } ;
     pub const GOLD: RGB         = RGB { r: 1.0      , g: 0.843137 , b: 0.0      } ;
-}
-
-
-///
-///Numbers are in range [0; 1]
-#[derive(Clone)]
-pub struct RGBA {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
-    pub a: f32,
-}
-
-impl Into<Color32> for RGBA {
-    fn into(self) -> Color32 {
-		Color32::from_rgba_unmultiplied((self.r * 255.0) as u8, (self.g * 255.0) as u8, (self.b * 255.0) as u8, (self.a * 255.0) as u8)
-    }
 }

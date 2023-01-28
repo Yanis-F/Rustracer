@@ -1,6 +1,5 @@
 use crate::math::*;
 
-
 use super::surface::Surface;
 
 #[derive(Clone)]
