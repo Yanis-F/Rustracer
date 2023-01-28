@@ -14,14 +14,33 @@ pub fn raytracer(scene: &Scene, ray: &Ray) -> RGB {
 		None => return VOID_COLOR,
 	};
 
-	let light_color = &scene.ambiant;
+	// TODO:
+	// Light calculation:
+	// First get a vector of <LightRay> of all lights reaching the raycast_hit point.
+	// Each `LightRay` shall have a RBGA color, a direction
+	// The ambiant light is handled separately
+	//
+	// The perceived Ambiant color is the subtractive_synthesis of ambiant light and
+	// surface.ambiant.
+	//
+	// The perceived Diffused color is the subtractive_synthesis of all the `LightRay.color`
+	// aggregated by additive synthesis.
+	//
+	// The perceived specular highlight is calculated with the angle at which the `LightRay` hits
+	// the surface, as well as the specular color of the surface and the shininess of the surface
+	//
+	//
+	// Final perceived color:
+	// Aggregation by additional synthesis of perceived Ambiant color, perceived Diffused color and
+	// perceived Specular highlight
 
-	// find all RBGA light affecting hit spot
-	// additon-synthesis of all light
+	let perceived_ambiant_color = get_perceived_ambiant_color(&scene.ambiant, raycast_hit.surface);
 
+	perceived_ambiant_color
+}
 
-	let light_color_rgb = light_color.to_rgb(VOID_COLOR);
-	light_color_rgb
+fn get_perceived_ambiant_color(ambiant: &crate::color::RGBA, surface: &crate::scene::surface::Surface) -> RGB {
+	let ambian_rgb = ambiant.to_rgb(VOID_COLOR);
 
-	// RGB::subtractive_synthesis(&raycast_hit.surface.ambiant, &light_color_rgb)
+	RGB::subtractive_synthesis(&surface.ambiant, &ambian_rgb)
 }
