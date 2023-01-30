@@ -1,7 +1,7 @@
 use egui::{Color32, ColorImage, ImageData, TextureId, Ui, Vec2};
 use vecmath::vec3_normalized;
 
-use crate::color::UiColorpickerExt;
+use crate::color::{UiColorpickerExt, Rgb};
 use crate::egui_utils::UiUtilsExt;
 use crate::math::{vec3, UiMathpickerExt};
 use crate::renderer::Renderer;
@@ -31,20 +31,32 @@ impl Rustracer {
         let render_size = [1280, 720];
 
         let mut default_scene = Scene::default();
+        default_scene.camera.position = vec3(0.0, 1.0, 0.0);
+        default_scene.ambiant = Rgb::BLACK;
+        default_scene
+            .lights
+            .push(crate::scene::light::SceneLight::Directional(
+                light_type::Directional {
+                    color: crate::color::Rgb::WHITE,
+                    direction: vec3(1.0, -1.0, 1.0),
+                },
+            ));
+
         default_scene
             .objects
             .push(crate::scene::object::SceneObject::Sphere(Sphere {
-                center: vec3(0.0, 0.0, 2.0),
+                center: vec3(0.0, 1.0, 2.0),
                 radius: 0.5,
                 surface: Surface::RUBY,
             }));
 
         default_scene
-            .lights
-            .push(crate::scene::light::SceneLight::Directional(
-                light_type::Directional {
-                    color: crate::color::Rgb::BLUE,
-                    direction: vec3(1.0, -1.0, 1.0),
+            .objects
+            .push(crate::scene::object::SceneObject::Plane(
+                object_type::Plane {
+                    point: vec3(0.0, 0.0, 0.0),
+                    normal: vec3(0.0, 1.0, 0.0),
+                    surface: Surface::CYAN_PLASTIC,
                 },
             ));
 

@@ -12,7 +12,7 @@ use self::{
 pub mod lightray;
 pub mod raycast;
 
-const VOID_COLOR: Rgb = Rgb::GRAY;
+const VOID_COLOR: Rgb = Rgb::BLACK;
 
 pub fn raytracer(scene: &Scene, ray: &Ray) -> Rgb {
     let raycast_result = raycast_object_slice(&scene.objects, ray);

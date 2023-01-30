@@ -325,7 +325,7 @@ impl UiSurfaceEditExt for egui::Ui {
 
         vec![
             ui.label(label),
-            ui.rustracer_color_edit_button_rgb(&mut surface.ambiant, "Ambian color:"),
+            ui.rustracer_color_edit_button_rgb(&mut surface.ambiant, "Ambiant color:"),
             ui.rustracer_color_edit_button_rgb(&mut surface.diffuse, "Diffuse color:"),
         ]
         .into_iter()
