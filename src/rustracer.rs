@@ -127,7 +127,7 @@ impl Rustracer {
 
         ui.add(egui::Separator::default().horizontal().spacing(50.0));
 
-        ui.heading("Lights");
+        ui.heading("Objects");
         ui.separator();
         {
             let mut object_vec = std::mem::take(&mut self.scene.objects);
