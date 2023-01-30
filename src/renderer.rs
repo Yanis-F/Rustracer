@@ -18,6 +18,8 @@ pub struct Renderer {
 
 struct RendererData {
     pub size: [usize; 2],
+    // TODO: pub antialiasing_factor: usize  (just a multiplicator on the `size`, compression will
+    // be done at render time by egui)
     scene: Scene,
     data: Mutex<RefCell<Vec<Color32>>>,
 
@@ -125,17 +127,17 @@ impl RendererData {
             result
         };
 
-        let virtual_screen_pixel_size_x = vec3_scale(axis_right, width_height_ratio / size[0] as f64);
+        let virtual_screen_pixel_size_x =
+            vec3_scale(axis_right, width_height_ratio / size[0] as f64);
         let virtual_screen_pixel_size_y = vec3_scale(axis_up, -1.0 / size[1] as f64);
 
-		let virtual_screen_relative_topleft_pixel_center = 
-			vec3_add(
-				virtual_screen_topleft,
-				vec3_scale(
-					vec3_add(virtual_screen_pixel_size_x, virtual_screen_pixel_size_y),
-					0.5,
-				)
-			);
+        let virtual_screen_relative_topleft_pixel_center = vec3_add(
+            virtual_screen_topleft,
+            vec3_scale(
+                vec3_add(virtual_screen_pixel_size_x, virtual_screen_pixel_size_y),
+                0.5,
+            ),
+        );
 
         Self {
             size,
@@ -153,6 +155,8 @@ impl RendererData {
         starting_coordinate_inclusive: [usize; 2],
         ending_coordinate_exclusive: [usize; 2],
     ) {
+		// TODO: spread out repartition of rays, first 1/16, then 1/8, then 1/4, 1/2, 1/1, both on
+		// x and y axis
         for y in starting_coordinate_inclusive[1]..ending_coordinate_exclusive[1] {
             let start_x = if y == starting_coordinate_inclusive[1] {
                 starting_coordinate_inclusive[0]
@@ -180,14 +184,13 @@ impl RendererData {
     /// x is rightwards
     /// y is upwards
     fn get_pixel_color(&self, x: usize, y: usize) -> Rgb {
-        let target_pixel_center_relative_position = 
-			vec3_add(
-				self.virtual_screen_relative_topleft_pixel_center,
-				vec3_add(
-					vec3_scale(self.virtual_screen_pixel_size_x, x as f64),
-					vec3_scale(self.virtual_screen_pixel_size_y, y as f64),
-				)
-			);
+        let target_pixel_center_relative_position = vec3_add(
+            self.virtual_screen_relative_topleft_pixel_center,
+            vec3_add(
+                vec3_scale(self.virtual_screen_pixel_size_x, x as f64),
+                vec3_scale(self.virtual_screen_pixel_size_y, y as f64),
+            ),
+        );
 
         let ray = Ray {
             origin: self.scene.camera.position,

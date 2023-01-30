@@ -18,6 +18,7 @@ pub fn raycast_plane<'plane>(plane: &'plane Plane, ray: &Ray) -> Option<RaycastH
     Some(RaycastHit {
         distance,
         surface: &plane.surface,
+        hit_direction: ray.direction,
         position,
         normal: plane.normal,
     })

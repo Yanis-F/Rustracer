@@ -22,7 +22,6 @@ pub fn raytracer(scene: &Scene, ray: &Ray) -> Rgb {
         None => return VOID_COLOR,
     };
 
-    // TODO:
     // Light calculation:
     // First get a vector of <LightRay> of all lights reaching the raycast_hit point.
     // Each `LightRay` shall have a RBGA color, a direction
@@ -46,8 +45,15 @@ pub fn raytracer(scene: &Scene, ray: &Ray) -> Rgb {
 
     let perceived_ambiant_color = get_perceived_ambiant_color(&scene.ambiant, raycast_hit.surface);
     let perceived_diffuse_color = get_perceived_diffuse_color(&lightrays, &raycast_hit);
+    let perceived_specular_color = get_perceived_specular_color(&lightrays, &raycast_hit);
 
-    Rgb::additive_synthesis(&perceived_ambiant_color, &perceived_diffuse_color)
+    Rgb::additive_synthesis(
+    	&perceived_ambiant_color, 
+		&Rgb::additive_synthesis(
+			&perceived_diffuse_color,
+			&perceived_specular_color,
+		)
+    )
 }
 
 fn get_perceived_ambiant_color(ambiant: &Rgb, surface: &Surface) -> Rgb {
@@ -62,5 +68,21 @@ fn get_perceived_diffuse_color(lightrays: &[LightRay], hit: &RaycastHit) -> Rgb 
             Rgb::subtractive_synthesis(&effective_light_color, &hit.surface.diffuse);
 
         Rgb::additive_synthesis(&accumulator, &ray_diffuse_color)
+    })
+}
+
+fn get_perceived_specular_color(lightrays: &[LightRay], hit: &RaycastHit) -> Rgb {
+    lightrays.iter().fold(Rgb::BLACK, |accumulator, lightray| {
+        let light_reflection_direction = vec3_reflect(lightray.direction, hit.normal);
+        let dot_product = -vec3_dot(hit.hit_direction, light_reflection_direction);
+
+        if dot_product < 0.0 {
+			return accumulator;
+		}
+        let effectiveness = dot_product.powf(hit.surface.shininess);
+        let effective_light_color = lightray.color.scale(effectiveness as f32);
+        let ray_specular_color = Rgb::subtractive_synthesis(&effective_light_color, &hit.surface.specular);
+
+        Rgb::additive_synthesis(&accumulator, &ray_specular_color)
     })
 }

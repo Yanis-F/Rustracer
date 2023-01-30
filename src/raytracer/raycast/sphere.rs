@@ -29,6 +29,7 @@ pub fn raycast_sphere<'sphere>(sphere: &'sphere Sphere, ray: &Ray) -> Option<Ray
     Some(RaycastHit {
         distance,
         surface: &sphere.surface,
+        hit_direction: ray.direction,
         position,
         normal,
     })

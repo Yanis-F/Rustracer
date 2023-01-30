@@ -1,4 +1,7 @@
-use crate::color::{Rgb, UiColorpickerExt};
+use crate::{
+    color::{Rgb, UiColorpickerExt},
+    egui_utils::UiUtilsExt,
+};
 
 #[derive(Clone, Default)]
 pub struct Surface {
@@ -9,20 +12,20 @@ pub struct Surface {
     /// The diffuse material vector defines the color of the surface under diffuse
     /// lighting. The diffuse color is (just like ambient lighting) set to the desired surface's color
     pub diffuse: Rgb,
-    // Specular color RGB - The specular material vector sets the color of the specular highlight on
+
+    // The specular material vector sets the color of the specular highlight on
     // the surface (or possibly even reflect a surface-specific color).
-    //
-    // shininess -  shininess impacts the scattering/radius of the specular highlight.
-    //
-    // Transparency (affecting light color when passing through?)
-    //
+    pub specular: Rgb,
+
+    // shininess impacts the scattering/radius of the specular highlight.
+    pub shininess: f64,
+    // Transparency (affecting light color when passing through? diffuse color ?)
     // Reflection
 }
 
 #[allow(dead_code)]
 impl Surface {
     // source : http://devernay.free.fr/cours/opengl/materials.html
-    // format : name | ambiant ambiant ambiant | diffuse diffuse diffuse | specular specular specular | shininess
     pub const EMERALD: Surface = Surface {
         ambiant: Rgb {
             r: 0.0215,
@@ -34,7 +37,13 @@ impl Surface {
             g: 0.61424,
             b: 0.07568,
         },
-    }; //		0.633	0.727811	0.633	0.6
+        specular: Rgb {
+            r: 0.633,
+            g: 0.727811,
+            b: 0.633,
+        },
+        shininess: 0.6,
+    };
     pub const JADE: Surface = Surface {
         ambiant: Rgb {
             r: 0.135,
@@ -46,7 +55,13 @@ impl Surface {
             g: 0.89,
             b: 0.63,
         },
-    }; // 	0.316228	0.316228	0.316228	0.1
+        specular: Rgb {
+            r: 0.316228,
+            g: 0.316228,
+            b: 0.316228,
+        },
+        shininess: 0.1,
+    };
     pub const OBSIDIAN: Surface = Surface {
         ambiant: Rgb {
             r: 0.05375,
@@ -58,7 +73,13 @@ impl Surface {
             g: 0.17,
             b: 0.22525,
         },
-    }; // 	0.332741	0.328634	0.346435	0.3
+        specular: Rgb {
+            r: 0.332741,
+            g: 0.328634,
+            b: 0.346435,
+        },
+        shininess: 0.3,
+    };
     pub const PEARL: Surface = Surface {
         ambiant: Rgb {
             r: 0.25,
@@ -70,7 +91,13 @@ impl Surface {
             g: 0.829,
             b: 0.829,
         },
-    }; // 	0.296648	0.296648	0.296648	0.088
+        specular: Rgb {
+            r: 0.296648,
+            g: 0.296648,
+            b: 0.296648,
+        },
+        shininess: 0.088,
+    };
     pub const RUBY: Surface = Surface {
         ambiant: Rgb {
             r: 0.1745,
@@ -82,7 +109,13 @@ impl Surface {
             g: 0.04136,
             b: 0.04136,
         },
-    }; // 	0.727811	0.626959	0.626959	0.6
+        specular: Rgb {
+            r: 0.727811,
+            g: 0.626959,
+            b: 0.626959,
+        },
+        shininess: 0.6,
+    };
     pub const TURQUOISE: Surface = Surface {
         ambiant: Rgb {
             r: 0.1,
@@ -94,7 +127,13 @@ impl Surface {
             g: 0.74151,
             b: 0.69102,
         },
-    }; // 	0.297254	0.30829	0.306678	0.1
+        specular: Rgb {
+            r: 0.297254,
+            g: 0.30829,
+            b: 0.306678,
+        },
+        shininess: 0.1,
+    };
     pub const BRASS: Surface = Surface {
         ambiant: Rgb {
             r: 0.329412,
@@ -106,7 +145,13 @@ impl Surface {
             g: 0.568627,
             b: 0.113725,
         },
-    }; // 	0.992157	0.941176	0.807843	0.21794872
+        specular: Rgb {
+            r: 0.992157,
+            g: 0.941176,
+            b: 0.807843,
+        },
+        shininess: 0.21794872,
+    };
     pub const BRONZE: Surface = Surface {
         ambiant: Rgb {
             r: 0.2125,
@@ -118,7 +163,13 @@ impl Surface {
             g: 0.4284,
             b: 0.18144,
         },
-    }; // 	0.393548	0.271906	0.166721	0.2
+        specular: Rgb {
+            r: 0.393548,
+            g: 0.271906,
+            b: 0.166721,
+        },
+        shininess: 0.2,
+    };
     pub const CHROME: Surface = Surface {
         ambiant: Rgb {
             r: 0.25,
@@ -130,7 +181,13 @@ impl Surface {
             g: 0.4,
             b: 0.4,
         },
-    }; // 	0.774597	0.774597	0.774597	0.6
+        specular: Rgb {
+            r: 0.774597,
+            g: 0.774597,
+            b: 0.774597,
+        },
+        shininess: 0.6,
+    };
     pub const COPPER: Surface = Surface {
         ambiant: Rgb {
             r: 0.19125,
@@ -142,7 +199,13 @@ impl Surface {
             g: 0.27048,
             b: 0.0828,
         },
-    }; // 	0.256777	0.137622	0.086014	0.1
+        specular: Rgb {
+            r: 0.256777,
+            g: 0.137622,
+            b: 0.086014,
+        },
+        shininess: 0.1,
+    };
     pub const GOLD: Surface = Surface {
         ambiant: Rgb {
             r: 0.24725,
@@ -154,7 +217,13 @@ impl Surface {
             g: 0.60648,
             b: 0.22648,
         },
-    }; // 	0.628281	0.555802	0.366065	0.4
+        specular: Rgb {
+            r: 0.628281,
+            g: 0.555802,
+            b: 0.366065,
+        },
+        shininess: 0.4,
+    };
     pub const SILVER: Surface = Surface {
         ambiant: Rgb {
             r: 0.19225,
@@ -166,7 +235,13 @@ impl Surface {
             g: 0.50754,
             b: 0.50754,
         },
-    }; // 	0.508273	0.508273	0.508273	0.4
+        specular: Rgb {
+            r: 0.508273,
+            g: 0.508273,
+            b: 0.508273,
+        },
+        shininess: 0.4,
+    };
     pub const BLACK_PLASTIC: Surface = Surface {
         ambiant: Rgb {
             r: 0.0,
@@ -178,7 +253,13 @@ impl Surface {
             g: 0.01,
             b: 0.01,
         },
-    }; // 	0.50	0.50	0.50	.25
+        specular: Rgb {
+            r: 0.50,
+            g: 0.50,
+            b: 0.50,
+        },
+        shininess: 0.25,
+    };
     pub const CYAN_PLASTIC: Surface = Surface {
         ambiant: Rgb {
             r: 0.0,
@@ -190,7 +271,13 @@ impl Surface {
             g: 0.5098039,
             b: 0.5098039,
         },
-    }; // 	0.50196078	0.50196078	0.50196078	.25
+        specular: Rgb {
+            r: 0.50196078,
+            g: 0.50196078,
+            b: 0.50196078,
+        },
+        shininess: 0.25,
+    };
     pub const GREEN_PLASTIC: Surface = Surface {
         ambiant: Rgb {
             r: 0.0,
@@ -202,7 +289,13 @@ impl Surface {
             g: 0.35,
             b: 0.1,
         },
-    }; // 	0.45	0.55	0.45	.25
+        specular: Rgb {
+            r: 0.45,
+            g: 0.55,
+            b: 0.45,
+        },
+        shininess: 0.25,
+    };
     pub const RED_PLASTIC: Surface = Surface {
         ambiant: Rgb {
             r: 0.0,
@@ -214,7 +307,13 @@ impl Surface {
             g: 0.0,
             b: 0.0,
         },
-    }; // 	0.7	0.6	0.6	.25
+        specular: Rgb {
+            r: 0.7,
+            g: 0.6,
+            b: 0.6,
+        },
+        shininess: 0.25,
+    };
     pub const WHITE_PLASTIC: Surface = Surface {
         ambiant: Rgb {
             r: 0.0,
@@ -226,7 +325,13 @@ impl Surface {
             g: 0.55,
             b: 0.55,
         },
-    }; // 	0.70	0.70	0.70	.25
+        specular: Rgb {
+            r: 0.70,
+            g: 0.70,
+            b: 0.70,
+        },
+        shininess: 0.25,
+    };
     pub const YELLOW_PLASTIC: Surface = Surface {
         ambiant: Rgb {
             r: 0.0,
@@ -238,7 +343,13 @@ impl Surface {
             g: 0.5,
             b: 0.0,
         },
-    }; // 	0.60	0.60	0.50	.25
+        specular: Rgb {
+            r: 0.60,
+            g: 0.60,
+            b: 0.50,
+        },
+        shininess: 0.25,
+    };
     pub const BLACK_RUBBER: Surface = Surface {
         ambiant: Rgb {
             r: 0.02,
@@ -250,7 +361,13 @@ impl Surface {
             g: 0.01,
             b: 0.01,
         },
-    }; // 	0.4	0.4	0.4	.078125
+        specular: Rgb {
+            r: 0.4,
+            g: 0.4,
+            b: 0.4,
+        },
+        shininess: 0.078125,
+    };
     pub const CYAN_RUBBER: Surface = Surface {
         ambiant: Rgb {
             r: 0.0,
@@ -262,7 +379,13 @@ impl Surface {
             g: 0.5,
             b: 0.5,
         },
-    }; // 	0.04	0.7	0.7	.078125
+        specular: Rgb {
+            r: 0.04,
+            g: 0.7,
+            b: 0.7,
+        },
+        shininess: 0.078125,
+    };
     pub const GREEN_RUBBER: Surface = Surface {
         ambiant: Rgb {
             r: 0.0,
@@ -274,7 +397,13 @@ impl Surface {
             g: 0.5,
             b: 0.4,
         },
-    }; // 	0.04	0.7	0.04	.078125
+        specular: Rgb {
+            r: 0.04,
+            g: 0.7,
+            b: 0.04,
+        },
+        shininess: 0.078125,
+    };
     pub const RED_RUBBER: Surface = Surface {
         ambiant: Rgb {
             r: 0.05,
@@ -286,7 +415,13 @@ impl Surface {
             g: 0.4,
             b: 0.4,
         },
-    }; // 	0.7	0.04	0.04	.078125
+        specular: Rgb {
+            r: 0.7,
+            g: 0.04,
+            b: 0.04,
+        },
+        shininess: 0.078125,
+    };
     pub const WHITE_RUBBER: Surface = Surface {
         ambiant: Rgb {
             r: 0.05,
@@ -298,7 +433,13 @@ impl Surface {
             g: 0.5,
             b: 0.5,
         },
-    }; // 	0.7	0.7	0.7	.078125
+        specular: Rgb {
+            r: 0.7,
+            g: 0.7,
+            b: 0.7,
+        },
+        shininess: 0.078125,
+    };
     pub const YELLOW_RUBBER: Surface = Surface {
         ambiant: Rgb {
             r: 0.05,
@@ -310,7 +451,13 @@ impl Surface {
             g: 0.5,
             b: 0.4,
         },
-    }; // 	0.7	0.7	0.04	.078125
+        specular: Rgb {
+            r: 0.7,
+            g: 0.7,
+            b: 0.04,
+        },
+        shininess: 0.078125,
+    };
 }
 
 pub trait UiSurfaceEditExt {
@@ -327,6 +474,8 @@ impl UiSurfaceEditExt for egui::Ui {
             ui.label(label),
             ui.rustracer_color_edit_button_rgb(&mut surface.ambiant, "Ambiant color:"),
             ui.rustracer_color_edit_button_rgb(&mut surface.diffuse, "Diffuse color:"),
+            ui.rustracer_color_edit_button_rgb(&mut surface.specular, "Specular color:"),
+            ui.drag_value(&mut surface.shininess, "Shininess:", 0.01, Some((0.0, 1.0))),
         ]
         .into_iter()
         .reduce(|a, b| a.union(b))

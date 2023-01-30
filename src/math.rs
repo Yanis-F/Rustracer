@@ -42,6 +42,24 @@ impl Ray {
     }
 }
 
+/// Calculate the reflection direction for an incident vector
+///
+/// For a given incident vector I and surface normal N reflect returns the reflection direction
+/// calculated as I - 2.0 * dot(N, I) * N.
+///
+/// N should be normalized in order to achieve the desired result.
+pub fn vec3_reflect(incident: Vector3, normal: Vector3) -> Vector3 {
+	assert!((vec3_len(normal) - 1.0).abs() < 1e-6, "normal vector should be normalized");
+
+	let dot = vec3_dot(incident, normal);
+
+	vec3_sub(
+		incident,
+		vec3_scale(normal, dot * 2.0)
+	)
+}
+
+
 pub trait UiMathpickerExt {
     fn rustracer_vector3_edit(
         &mut self,

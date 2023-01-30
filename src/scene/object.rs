@@ -21,8 +21,12 @@ pub mod object_type {
         pub surface: Surface,
     }
     impl Default for Plane {
-		fn default() -> Self {
-		    Self { point: Default::default(), normal: [0.0, 1.0, 0.0], surface: Default::default() }
-		}
-	}
+        fn default() -> Self {
+            Self {
+                point: Default::default(),
+                normal: [0.0, 1.0, 0.0],
+                surface: Default::default(),
+            }
+        }
+    }
 }

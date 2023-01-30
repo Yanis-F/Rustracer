@@ -12,6 +12,7 @@ pub struct RaycastHit<'scene> {
     pub distance: f64,
     pub surface: &'scene Surface,
     pub position: Vector3,
+    pub hit_direction: Vector3,
     pub normal: Vector3,
 }
 

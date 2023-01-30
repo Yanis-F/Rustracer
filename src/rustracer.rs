@@ -1,7 +1,7 @@
 use egui::{Color32, ColorImage, ImageData, TextureId, Ui, Vec2};
 use vecmath::vec3_normalized;
 
-use crate::color::{UiColorpickerExt, Rgb};
+use crate::color::{Rgb, UiColorpickerExt};
 use crate::egui_utils::UiUtilsExt;
 use crate::math::{vec3, UiMathpickerExt};
 use crate::renderer::Renderer;
@@ -178,7 +178,7 @@ impl Rustracer {
         self.renderer_dirty |= ui
             .rustracer_vector3_edit(&mut sphere.center, "Center:", 0.1)
             .changed();
-        self.renderer_dirty |= ui.drag_value(&mut sphere.radius, "Radius:", 0.1).changed();
+        self.renderer_dirty |= ui.drag_value(&mut sphere.radius, "Radius:", 0.1, Some((0.0, 99999.0))).changed();
         self.renderer_dirty |= ui
             .rustracer_surface_edit(&mut sphere.surface, "Surface:")
             .changed();
