@@ -48,11 +48,8 @@ pub fn raytracer(scene: &Scene, ray: &Ray) -> Rgb {
     let perceived_specular_color = get_perceived_specular_color(&lightrays, &raycast_hit);
 
     Rgb::additive_synthesis(
-    	&perceived_ambiant_color, 
-		&Rgb::additive_synthesis(
-			&perceived_diffuse_color,
-			&perceived_specular_color,
-		)
+        &perceived_ambiant_color,
+        &Rgb::additive_synthesis(&perceived_diffuse_color, &perceived_specular_color),
     )
 }
 
@@ -77,11 +74,12 @@ fn get_perceived_specular_color(lightrays: &[LightRay], hit: &RaycastHit) -> Rgb
         let dot_product = -vec3_dot(hit.hit_direction, light_reflection_direction);
 
         if dot_product < 0.0 {
-			return accumulator;
-		}
+            return accumulator;
+        }
         let effectiveness = dot_product.powf(hit.surface.shininess);
         let effective_light_color = lightray.color.scale(effectiveness as f32);
-        let ray_specular_color = Rgb::subtractive_synthesis(&effective_light_color, &hit.surface.specular);
+        let ray_specular_color =
+            Rgb::subtractive_synthesis(&effective_light_color, &hit.surface.specular);
 
         Rgb::additive_synthesis(&accumulator, &ray_specular_color)
     })

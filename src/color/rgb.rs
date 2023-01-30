@@ -1,7 +1,7 @@
 use egui::Color32;
 
 /// Numbers are in range [0; 1]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Rgb {
     pub r: f32,
     pub g: f32,

@@ -49,16 +49,15 @@ impl Ray {
 ///
 /// N should be normalized in order to achieve the desired result.
 pub fn vec3_reflect(incident: Vector3, normal: Vector3) -> Vector3 {
-	assert!((vec3_len(normal) - 1.0).abs() < 1e-6, "normal vector should be normalized");
+    assert!(
+        (vec3_len(normal) - 1.0).abs() < 1e-6,
+        "normal vector should be normalized"
+    );
 
-	let dot = vec3_dot(incident, normal);
+    let dot = vec3_dot(incident, normal);
 
-	vec3_sub(
-		incident,
-		vec3_scale(normal, dot * 2.0)
-	)
+    vec3_sub(incident, vec3_scale(normal, dot * 2.0))
 }
-
 
 pub trait UiMathpickerExt {
     fn rustracer_vector3_edit(

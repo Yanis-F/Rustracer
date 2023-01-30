@@ -155,8 +155,8 @@ impl RendererData {
         starting_coordinate_inclusive: [usize; 2],
         ending_coordinate_exclusive: [usize; 2],
     ) {
-		// TODO: spread out repartition of rays, first 1/16, then 1/8, then 1/4, 1/2, 1/1, both on
-		// x and y axis
+        // TODO: spread out repartition of rays, first 1/16, then 1/8, then 1/4, 1/2, 1/1, both on
+        // x and y axis
         for y in starting_coordinate_inclusive[1]..ending_coordinate_exclusive[1] {
             let start_x = if y == starting_coordinate_inclusive[1] {
                 starting_coordinate_inclusive[0]

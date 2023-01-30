@@ -1,6 +1,7 @@
 #[derive(Clone)]
 pub enum SceneLight {
-    Directional(light_type::Directional), // point
+    Directional(light_type::Directional),
+    Point(light_type::Point),
 }
 
 pub mod light_type {
@@ -21,5 +22,11 @@ pub mod light_type {
                 direction: vec3_neg(VECTOR3_UP),
             }
         }
+    }
+
+    #[derive(Clone, Default)]
+    pub struct Point {
+        pub color: Rgb,
+        pub position: Vector3,
     }
 }

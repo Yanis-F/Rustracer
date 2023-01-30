@@ -47,7 +47,7 @@ impl Rustracer {
             .push(crate::scene::object::SceneObject::Sphere(Sphere {
                 center: vec3(0.0, 1.0, 2.0),
                 radius: 0.5,
-                surface: Surface::RUBY,
+                surface: Surface::BRONZE,
             }));
 
         default_scene
@@ -121,6 +121,10 @@ impl Rustracer {
                     light_vec.push(SceneLight::Directional(light_type::Directional::default()));
                     self.renderer_dirty = true;
                 }
+                if ui.button("Point light").clicked() {
+                    light_vec.push(SceneLight::Point(light_type::Point::default()));
+                    self.renderer_dirty = true;
+                }
             });
             self.scene.lights = light_vec;
         }
@@ -151,8 +155,10 @@ impl Rustracer {
     }
 
     fn display_light_editor(&mut self, ui: &mut Ui, light: &mut SceneLight) {
+    	// TODO: add ability to delete light
         match light {
             SceneLight::Directional(light) => self.display_light_editor_directional(ui, light),
+            SceneLight::Point(light) => self.display_light_editor_point(ui, light),
         }
     }
 
@@ -166,7 +172,18 @@ impl Rustracer {
             .changed();
     }
 
+    fn display_light_editor_point(&mut self, ui: &mut Ui, light: &mut Point) {
+        ui.label("Point light");
+        self.renderer_dirty |= ui
+            .rustracer_color_edit_button_rgb(&mut light.color, "Color:")
+            .changed();
+        self.renderer_dirty |= ui
+            .rustracer_vector3_edit(&mut light.position, "Position:", 0.1)
+            .changed();
+    }
+
     fn display_object_editor(&mut self, ui: &mut Ui, object: &mut SceneObject) {
+    	// TODO: add ability to delete object
         match object {
             SceneObject::Sphere(sphere) => self.display_object_editor_sphere(ui, sphere),
             SceneObject::Plane(plane) => self.display_object_editor_plane(ui, plane),
@@ -178,7 +195,9 @@ impl Rustracer {
         self.renderer_dirty |= ui
             .rustracer_vector3_edit(&mut sphere.center, "Center:", 0.1)
             .changed();
-        self.renderer_dirty |= ui.drag_value(&mut sphere.radius, "Radius:", 0.1, Some((0.0, 99999.0))).changed();
+        self.renderer_dirty |= ui
+            .drag_value(&mut sphere.radius, "Radius:", 0.1, Some((0.0, 99999.0)))
+            .changed();
         self.renderer_dirty |= ui
             .rustracer_surface_edit(&mut sphere.surface, "Surface:")
             .changed();
