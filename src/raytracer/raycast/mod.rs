@@ -1,5 +1,7 @@
 mod sphere;
 pub use sphere::raycast_sphere;
+mod plane;
+pub use plane::raycast_plane;
 
 use crate::{
     math::*,
@@ -42,5 +44,6 @@ pub fn raycast_object<'scene>(
 ) -> Option<RaycastHit<'scene>> {
     match object {
         SceneObject::Sphere(sphere) => raycast_sphere(sphere, ray),
+        SceneObject::Plane(plane) => raycast_plane(plane, ray),
     }
 }

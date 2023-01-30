@@ -1,6 +1,6 @@
-use crate::color::Rgb;
+use crate::color::{Rgb, UiColorpickerExt};
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Surface {
     ///  what color the surface reflects under ambient lighting
     /// this is usually the same as the surface's color
@@ -311,4 +311,25 @@ impl Surface {
             b: 0.4,
         },
     }; // 	0.7	0.7	0.04	.078125
+}
+
+pub trait UiSurfaceEditExt {
+    fn rustracer_surface_edit(&mut self, surface: &mut Surface, label: &str) -> egui::Response;
+}
+
+impl UiSurfaceEditExt for egui::Ui {
+    fn rustracer_surface_edit(&mut self, surface: &mut Surface, label: &str) -> egui::Response {
+        let ui = self;
+
+        // TODO: add preset picker
+
+        vec![
+            ui.label(label),
+            ui.rustracer_color_edit_button_rgb(&mut surface.ambiant, "Ambian color:"),
+            ui.rustracer_color_edit_button_rgb(&mut surface.diffuse, "Diffuse color:"),
+        ]
+        .into_iter()
+        .reduce(|a, b| a.union(b))
+        .unwrap()
+    }
 }

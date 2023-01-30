@@ -1,14 +1,19 @@
 use egui::{Color32, ColorImage, ImageData, TextureId, Ui, Vec2};
+use vecmath::vec3_normalized;
 
 use crate::color::UiColorpickerExt;
+use crate::egui_utils::UiUtilsExt;
 use crate::math::{vec3, UiMathpickerExt};
 use crate::renderer::Renderer;
 use crate::scene::light::{
     light_type::{self, *},
     SceneLight,
 };
-use crate::scene::object::object_type::*;
-use crate::scene::surface::Surface;
+use crate::scene::object::{
+    object_type::{self, *},
+    SceneObject,
+};
+use crate::scene::surface::{Surface, UiSurfaceEditExt};
 use crate::scene::Scene;
 
 pub struct Rustracer {
@@ -76,29 +81,20 @@ impl Rustracer {
 
         // CAMERA
         ui.heading("Camera");
-        ui.horizontal(|ui| {
-            ui.label("Position:");
-            self.renderer_dirty |= ui
-                .rustracer_vector3_edit(&mut self.scene.camera.position, 0.1)
-                .changed();
-        });
-        ui.horizontal(|ui| {
-            ui.label("Facing direction:");
-            self.renderer_dirty |= ui
-                .rustracer_quaternion_edit(&mut self.scene.camera.orientation, 0.1)
-                .changed();
-        });
+        self.renderer_dirty |= ui
+            .rustracer_vector3_edit(&mut self.scene.camera.position, "Position:", 0.1)
+            .changed();
+        self.renderer_dirty |= ui
+            .rustracer_quaternion_edit(&mut self.scene.camera.orientation, "Facing direction:", 0.1)
+            .changed();
 
         ui.add(egui::Separator::default().horizontal().spacing(50.0));
 
         ui.heading("Lights");
         ui.separator();
-        ui.horizontal(|ui| {
-            ui.label("Ambiant (one per scene):");
-            self.renderer_dirty |= ui
-                .rustracer_color_edit_button_rgb(&mut self.scene.ambiant)
-                .changed();
-        });
+        self.renderer_dirty |= ui
+            .rustracer_color_edit_button_rgb(&mut self.scene.ambiant, "Ambiant (one per scene):")
+            .changed();
         ui.separator();
 
         {
@@ -116,6 +112,30 @@ impl Rustracer {
             });
             self.scene.lights = light_vec;
         }
+
+        ui.add(egui::Separator::default().horizontal().spacing(50.0));
+
+        ui.heading("Lights");
+        ui.separator();
+        {
+            let mut object_vec = std::mem::take(&mut self.scene.objects);
+            for object in &mut object_vec {
+                self.display_object_editor(ui, object);
+                ui.separator();
+            }
+            ui.label("Add object:");
+            ui.horizontal_wrapped(|ui| {
+                if ui.button("Sphere").clicked() {
+                    object_vec.push(SceneObject::Sphere(object_type::Sphere::default()));
+                    self.renderer_dirty = true;
+                }
+                if ui.button("Plane").clicked() {
+                    object_vec.push(SceneObject::Plane(object_type::Plane::default()));
+                    self.renderer_dirty = true;
+                }
+            });
+            self.scene.objects = object_vec;
+        }
     }
 
     fn display_light_editor(&mut self, ui: &mut Ui, light: &mut SceneLight) {
@@ -126,18 +146,44 @@ impl Rustracer {
 
     fn display_light_editor_directional(&mut self, ui: &mut Ui, light: &mut Directional) {
         ui.label("Directional light");
-        ui.horizontal(|ui| {
-            ui.label("Color:");
-            self.renderer_dirty |= ui
-                .rustracer_color_edit_button_rgb(&mut light.color)
-                .changed();
-        });
-        ui.horizontal(|ui| {
-            ui.label("Direction:");
-            self.renderer_dirty |= ui
-                .rustracer_vector3_edit(&mut light.direction, 0.1)
-                .changed();
-        });
+        self.renderer_dirty |= ui
+            .rustracer_color_edit_button_rgb(&mut light.color, "Color:")
+            .changed();
+        self.renderer_dirty |= ui
+            .rustracer_vector3_edit(&mut light.direction, "Direction:", 0.1)
+            .changed();
+    }
+
+    fn display_object_editor(&mut self, ui: &mut Ui, object: &mut SceneObject) {
+        match object {
+            SceneObject::Sphere(sphere) => self.display_object_editor_sphere(ui, sphere),
+            SceneObject::Plane(plane) => self.display_object_editor_plane(ui, plane),
+        }
+    }
+
+    fn display_object_editor_sphere(&mut self, ui: &mut Ui, sphere: &mut Sphere) {
+        ui.label("Sphere");
+        self.renderer_dirty |= ui
+            .rustracer_vector3_edit(&mut sphere.center, "Center:", 0.1)
+            .changed();
+        self.renderer_dirty |= ui.drag_value(&mut sphere.radius, "Radius:", 0.1).changed();
+        self.renderer_dirty |= ui
+            .rustracer_surface_edit(&mut sphere.surface, "Surface:")
+            .changed();
+    }
+
+    fn display_object_editor_plane(&mut self, ui: &mut Ui, plane: &mut Plane) {
+        ui.label("Plane");
+        self.renderer_dirty |= ui
+            .rustracer_vector3_edit(&mut plane.point, "Point:", 0.1)
+            .changed();
+        self.renderer_dirty |= ui
+            .rustracer_vector3_edit(&mut plane.normal, "Normal:", 0.01)
+            .changed();
+        plane.normal = vec3_normalized(plane.normal);
+        self.renderer_dirty |= ui
+            .rustracer_surface_edit(&mut plane.surface, "Surface:")
+            .changed();
     }
 
     fn display_visualizer(&mut self, ctx: &egui::Context, ui: &mut Ui) {

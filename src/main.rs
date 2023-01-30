@@ -1,6 +1,7 @@
 use eframe::egui;
 
 mod color;
+mod egui_utils;
 mod math;
 mod raytracer;
 mod renderer;

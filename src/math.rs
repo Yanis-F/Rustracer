@@ -3,6 +3,8 @@
 pub use quaternion::*;
 pub use vecmath::*;
 
+use crate::egui_utils::UiUtilsExt;
+
 pub type Vector2 = vecmath::Vector2<f64>;
 pub fn vec2(x: f64, y: f64) -> Vector2 {
     [x, y]
@@ -41,40 +43,53 @@ impl Ray {
 }
 
 pub trait UiMathpickerExt {
-    fn rustracer_vector3_edit(&mut self, vector: &mut Vector3, speed: f64) -> egui::Response;
+    fn rustracer_vector3_edit(
+        &mut self,
+        vector: &mut Vector3,
+        label: &str,
+        speed: f64,
+    ) -> egui::Response;
     fn rustracer_quaternion_edit(
         &mut self,
         quaternion: &mut Quaternion,
+        label: &str,
         speed: f64,
     ) -> egui::Response;
 }
 
 impl UiMathpickerExt for egui::Ui {
-    fn rustracer_vector3_edit(&mut self, vector: &mut Vector3, speed: f64) -> egui::Response {
-        let inner_response = self.horizontal(|ui| {
-            let first_response = ui.label("x:");
+    fn rustracer_vector3_edit(
+        &mut self,
+        vector: &mut Vector3,
+        label: &str,
+        speed: f64,
+    ) -> egui::Response {
+        let ui = self;
+
+        ui.horizontal_response_union(|ui| {
             vec![
+                ui.label(label),
+                ui.label("x:"),
                 ui.add(egui::DragValue::new(&mut vector[0]).speed(speed)),
                 ui.label("y:"),
                 ui.add(egui::DragValue::new(&mut vector[1]).speed(speed)),
                 ui.label("z:"),
                 ui.add(egui::DragValue::new(&mut vector[2]).speed(speed)),
             ]
-            .iter()
-            .fold(first_response, |a, b| b.union(a))
-        });
-
-        inner_response.inner.union(inner_response.response)
+        })
     }
 
     fn rustracer_quaternion_edit(
         &mut self,
         quaternion: &mut Quaternion,
+        label: &str,
         speed: f64,
     ) -> egui::Response {
+        // TODO: Unity-like Euler angles
+
         let mut facing_direction = rotate_vector(*quaternion, VECTOR3_FORWARD);
 
-        let response = self.rustracer_vector3_edit(&mut facing_direction, speed);
+        let response = self.rustracer_vector3_edit(&mut facing_direction, label, speed);
 
         *quaternion = rotation_from_to(VECTOR3_FORWARD, facing_direction);
 
