@@ -23,7 +23,8 @@ struct RendererData {
 
     bail_threads: AtomicBool,
 
-    virtual_screen_pixel_size: Vector3,
+    virtual_screen_pixel_size_x: Vector3,
+    virtual_screen_pixel_size_y: Vector3,
     virtual_screen_bottomleft_pixel_center: Vector3,
 }
 
@@ -111,10 +112,16 @@ impl RendererData {
         let virtual_screen_center = axis_forward;
         let width_height_ratio = size[0] as f64 / size[1] as f64;
 
+        // println!("Axis:\nup: {},{},{}\nforward: {},{},{}\nright: {},{},{}",
+        // 		 axis_up[0], axis_up[1], axis_up[2],
+        // 		 axis_forward[0], axis_forward[1], axis_forward[2],
+        // 		 axis_right[0], axis_right[1], axis_right[2],
+        // 		 );
+
         // bottomleft corner of bottomleft-most pixel of the virtual screen
         let virtual_screen_bottomleft = {
-            let relative_down = vec3_scale(vec3_neg(axis_up), 0.5);
-            let relative_left = vec3_scale(vec3_neg(axis_right), 0.5 * width_height_ratio);
+            let relative_down = vec3_scale(axis_up, -0.5);
+            let relative_left = vec3_scale(axis_right, -0.5 * width_height_ratio);
 
             let result = virtual_screen_center;
             let result = vec3_add(result, relative_down);
@@ -124,24 +131,28 @@ impl RendererData {
             result
         };
 
-        let virtual_screen_pixel_size = {
-            let size_up = vec3_scale(axis_up, 1.0 / size[1] as f64);
-            let size_right = vec3_scale(axis_right, width_height_ratio / size[0] as f64);
-
-            vec3_add(size_up, size_right)
-        };
+        let virtual_screen_pixel_size_x =
+            vec3_scale(axis_right, width_height_ratio / size[0] as f64);
+        let virtual_screen_pixel_size_y = vec3_scale(axis_up, 1.0 / size[1] as f64);
 
         let virtual_screen_bottomleft_pixel_center = vec3_add(
             virtual_screen_bottomleft,
-            vec3_scale(virtual_screen_pixel_size, 0.5),
+            vec3_scale(virtual_screen_pixel_size_x, 0.5),
         );
+
+        //       println!(
+        //       	"Pixel size: {},{},{}\nBottomleft pixel center: {},{},{}",
+        //       	virtual_screen_pixel_size[0], virtual_screen_pixel_size[1], virtual_screen_pixel_size[2],
+        //       	virtual_screen_bottomleft_pixel_center[0], virtual_screen_bottomleft_pixel_center[1], virtual_screen_bottomleft_pixel_center[2]
+        // );
 
         Self {
             size,
             scene,
             data,
             bail_threads,
-            virtual_screen_pixel_size,
+            virtual_screen_pixel_size_x,
+            virtual_screen_pixel_size_y,
             virtual_screen_bottomleft_pixel_center,
         }
     }
@@ -178,14 +189,13 @@ impl RendererData {
     /// x is rightwards
     /// y is upwards
     fn get_pixel_color(&self, x: usize, y: usize) -> Rgb {
-        let target_pixel_coordinate = vec3_add(
-            vec3_scale(VECTOR3_RIGHT, x as f64),
-            vec3_scale(VECTOR3_UP, y as f64),
+        let target_pixel_center_position = vec3_add(
+            self.virtual_screen_bottomleft_pixel_center,
+            vec3_add(
+                vec3_scale(self.virtual_screen_pixel_size_x, x as f64),
+                vec3_scale(self.virtual_screen_pixel_size_y, y as f64),
+            ),
         );
-        let target_pixel_center_position = {
-            let relative_pos = vec3_mul(target_pixel_coordinate, self.virtual_screen_pixel_size);
-            vec3_add(self.virtual_screen_bottomleft_pixel_center, relative_pos)
-        };
 
         let ray = Ray {
             origin: self.scene.camera.position,

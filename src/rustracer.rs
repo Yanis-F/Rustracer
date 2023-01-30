@@ -141,8 +141,6 @@ impl Rustracer {
     }
 
     fn display_visualizer(&mut self, ctx: &egui::Context, ui: &mut Ui) {
-        ui.label("Here is the visualizer");
-
         ui.horizontal(|ui| {
             ui.label("Render size:");
             ui.label("width:");
